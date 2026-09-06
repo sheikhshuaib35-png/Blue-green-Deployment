@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-blue
+  labels:
+    app: frontend
+    version: blue
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+      version: blue
+  template:
+    metadata:
+      labels:
+        app: frontend
+        version: blue
+    spec:
+      containers:
+        - name: frontend-blue
+          image: shekhshuaib/frontend-blue:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3100
+          env:
+            - name: PORT
+              value: "3100"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 20

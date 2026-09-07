@@ -1,0 +1,93 @@
+PS D:\HV\Assessment\Assessment_2\Blue-green-Deployment> docker build -t shekhshuaib/backend:v1 ./backend                    
+[+] Building 0.3s (1/1) FINISHED                                               docker:desktop-linux
+ => [internal] load build definition from Dockerfile                                           0.1s
+ => => transferring dockerfile: 2B                                                             0.0s
+ERROR: failed to build: failed to solve: failed to read dockerfile: open Dockerfile: no such file or directory
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/2udedimrervmd5ggyk5qi0m4m
+
+What's next:
+    Debug this build failure with Gordon → docker ai "help me fix this build failure"
+PS D:\HV\Assessment\Assessment_2\Blue-green-Deployment> docker build -t shekhshuaib/frontend-blue:v1 ./frontend-blue
+[+] Building 0.2s (1/1) FINISHED                                               docker:desktop-linux
+ => [internal] load build definition from Dockerfile                                           0.1s
+ => => transferring dockerfile: 2B                                                             0.0s
+ERROR: failed to build: failed to solve: failed to read dockerfile: open Dockerfile: no such file or directory
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/kvrtc8hoqelat2q4jsdwqhlwr
+
+What's next:
+    Debug this build failure with Gordon → docker ai "help me fix this build failure"
+PS D:\HV\Assessment\Assessment_2\Blue-green-Deployment> docker build -t shekhshuaib/frontend-green:v1 ./frontend-green
+[+] Building 0.1s (1/1) FINISHED                                               docker:desktop-linux
+ => [internal] load build definition from Dockerfile                                           0.0s
+ => => transferring dockerfile: 2B                                                             0.0s
+ERROR: failed to build: failed to solve: failed to read dockerfile: open Dockerfile: no such file or directory
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/to14cikhuxhungwfqzjyrwpiw
+
+What's next:
+    Debug this build failure with Gordon → docker ai "help me fix this build failure"
+PS D:\HV\Assessment\Assessment_2\Blue-green-Deployment> minikube start
+😄  minikube v1.39.0 on Microsoft Windows 11 Home Single Language 25H2
+✨  Automatically selected the docker driver
+📌  Using Docker Desktop driver with root privileges
+👍  Starting "minikube" primary control-plane node in "minikube" cluster
+🚜  Pulling base image v0.0.51 ...
+💾  Downloading Kubernetes v1.37.0 preload ...
+    > preloaded-images-k8s-v18-v1...:  347.59 MiB / 347.59 MiB  100.00% 13.30 M
+    > gcr.io/k8s-minikube/kicbase:  507.61 MiB / 507.61 MiB  100.00% 13.80 MiB 
+🔥  Creating docker container (CPUs=2, Memory=3800MB) ... 
+📦  Preparing Kubernetes v1.37.0 on containerd 2.3.4 ...
+🔗  Configuring CNI (Container Networking Interface) ...
+🔎  Verifying Kubernetes components...
+    ▪ Using image gcr.io/k8s-minikube/storage-provisioner:v5
+🌟  Enabled addons: storage-provisioner, default-storageclass
+
+❗  C:\Program Files\Docker\Docker\resources\bin\kubectl.exe is version 1.34.1, which may have incompatibilities with Kubernetes 1.37.0.
+    ▪ Want kubectl v1.37.0? Try 'minikube kubectl -- get pods -A'
+🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+PS D:\HV\Assessment\Assessment_2\Blue-green-Deployment> minikube addons enable metrics-server
+💡  metrics-server is an addon maintained by Kubernetes. For any concerns contact minikube on GitHub.
+You can view the list of minikube maintainers at: https://github.com/kubernetes/minikube/blob/master/OWNERS
+    ▪ Using image registry.k8s.io/metrics-server/metrics-server:v0.9.0
+🌟  The 'metrics-server' addon is enabled
+PS D:\HV\Assessment\Assessment_2\Blue-green-Deployment> minikube addons enable ingress
+💡  ingress is an addon maintained by Kubernetes. For any concerns contact minikube on GitHub.
+You can view the list of minikube maintainers at: https://github.com/kubernetes/minikube/blob/master/OWNERS
+💡  After the addon is enabled, please run "minikube tunnel" and your ingress resources would be available at "127.0.0.1"
+    ▪ Using image registry.k8s.io/ingress-nginx/controller:v1.15.1
+    ▪ Using image registry.k8s.io/ingress-nginx/kube-webhook-certgen:v1.6.9
+    ▪ Using image registry.k8s.io/ingress-nginx/kube-webhook-certgen:v1.6.9
+🔎  Verifying ingress addon...
+🌟  The 'ingress' addon is enabled
+PS D:\HV\Assessment\Assessment_2\Blue-green-Deployment> kubectl apply -f k8s/
+deployment.apps/backend created
+service/backend-service created
+deployment.apps/frontend-blue created
+deployment.apps/frontend-green created
+service/frontend-service created
+ingress.networking.k8s.io/blue-green-ingress created
+PS D:\HV\Assessment\Assessment_2\Blue-green-Deployment> kubectl ge deployments
+error: unknown command "ge" for "kubectl"
+
+Did you mean this?
+        set
+        get
+        cp
+PS D:\HV\Assessment\Assessment_2\Blue-green-Deployment> kubectl get deployments
+NAME             READY   UP-TO-DATE   AVAILABLE   AGE
+backend          0/1     1            0           28s
+frontend-blue    0/1     1            0           28s
+frontend-green   0/1     1            0           27s
+PS D:\HV\Assessment\Assessment_2\Blue-green-Deployment> kubectl get services   
+NAME               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+backend-service    ClusterIP   10.106.169.107   <none>        5000/TCP   38s
+frontend-service   ClusterIP   10.97.189.168    <none>        80/TCP     37s
+kubernetes         ClusterIP   10.96.0.1        <none>        443/TCP    11m
+PS D:\HV\Assessment\Assessment_2\Blue-green-Deployment> kubectl get pods    
+NAME                              READY   STATUS             RESTARTS   AGE
+backend-7967b94bcf-zqvvs          0/1     ImagePullBackOff   0          47s
+frontend-blue-65dcd4b44d-98klv    0/1     ImagePullBackOff   0          46s
+frontend-green-85f5548759-vjl54   0/1     ErrImagePull       0          46s
+PS D:\HV\Assessment\Assessment_2\Blue-green-Deployment> 

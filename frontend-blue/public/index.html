@@ -69,7 +69,10 @@
       };
       
       try {
-        const response = await fetch('http://localhost:5000/api/users', {
+        const apiUrl = ['3100', '3200'].includes(window.location.port)
+          ? 'http://localhost:5000/api/users'
+          : '/api/users';
+        const response = await fetch(apiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

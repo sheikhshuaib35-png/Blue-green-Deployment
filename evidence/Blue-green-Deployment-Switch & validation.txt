@@ -1,0 +1,24 @@
+PS D:\HV\Assessment\Assessment_2\Blue-green-Deployment> @'
+>> {"spec":{"selector":{"app":"frontend","version":"green"}}}                                       
+>> '@ | Set-Content -Path .\green-patch.json -Encoding ascii
+PS D:\HV\Assessment\Assessment_2\Blue-green-Deployment> kubectl patch service frontend-service --type=merge --patch-file .\green-patch.json
+service/frontend-service patched
+PS D:\HV\Assessment\Assessment_2\Blue-green-Deployment> kubectl get service frontend-service -o jsonpath="{.spec.selector}"
+{"app":"frontend","version":"green"}
+PS D:\HV\Assessment\Assessment_2\Blue-green-Deployment> git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        green-patch.json
+
+nothing added to commit but untracked files present (use "git add" to track)
+PS D:\HV\Assessment\Assessment_2\Blue-green-Deployment> @'
+>> {"spec":{"selector":{"app":"frontend","version":"blue"}}}
+>> '@ | Set-Content -Path .\blue-patch.json -Encoding ascii
+PS D:\HV\Assessment\Assessment_2\Blue-green-Deployment> kubectl patch service frontend-service --type=merge --patch-file .\blue-patch.json
+service/frontend-service patched
+PS D:\HV\Assessment\Assessment_2\Blue-green-Deployment> kubectl get service frontend-service -o jsonpath="{.spec.selector}"
+{"app":"frontend","version":"blue"}
+PS D:\HV\Assessment\Assessment_2\Blue-green-Deployment> 

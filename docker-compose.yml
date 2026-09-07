@@ -1,0 +1,58 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: blue-green-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval \"db.adminCommand('ping').ok\" | grep 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+    image: blue-green-backend:local
+    container_name: blue-green-backend
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      PORT: "5000"
+      MONGO_URI: mongodb://mongo:27017/registration
+    ports:
+      - "5000:5000"
+
+  frontend-blue:
+    build:
+      context: ./frontend-blue
+    image: blue-green-frontend-blue:local
+    container_name: blue-green-frontend-blue
+    restart: unless-stopped
+    environment:
+      PORT: "3100"
+    ports:
+      - "3100:3100"
+    depends_on:
+      - backend
+
+  frontend-green:
+    build:
+      context: ./frontend-green
+    image: blue-green-frontend-green:local
+    container_name: blue-green-frontend-green
+    restart: unless-stopped
+    environment:
+      PORT: "3200"
+    ports:
+      - "3200:3200"
+    depends_on:
+      - backend
+
+volumes:
+  mongo-data:
